@@ -37,64 +37,77 @@ raiz = Tk.Tk()  # Se construye el objeto raiz de la clase Tk
 raiz.title("Clasificador leucemia")  # Se le asigna un nombre a la ventana
 raiz.iconbitmap("icon.ico")  # Agregamos un icono
 raiz.config(bg="blue")  # Definimos el background de la raiz
+raiz.resizable(False, False)  # Evita que se modifique el tamaño de la ventana
 # Definimos el frame
 frame = Tk.Frame(raiz, width=480, height=380)  # Se construye el frame que se va empaquetar en la ventana
 frame.pack(fill="both", expand="True")  # Empaquetamps el frame en la ventana
 
 # Variables Auxiliares
 fichero = 'No.png'  # Ruta de la imagen a mostrar una vez inicie el programa
+hay = False  # Me dice si se cargo una imagen o no
 
 
 # --------------------------------------------------------------------------
 # -- 3. Definición de funciones del juego   --------------------------------
 # --------------------------------------------------------------------------
 
-def clasificacion(path):
-    size = (640, 480)
+def clasificacion(path, bole):
+    if bole:
+        size = (640, 480)
 
-    x = load_img(path, target_size=size)
-    x = img_to_array(x)
-    x = np.expand_dims(x, axis=0)
-    array = cnn.predict(x)
-    result = array[0]
-    print(result)
-    if result == 0:
-        print("pred: Leucemia")
-        return True
+        x = load_img(path, target_size=size)
+        x = img_to_array(x)
+        x = np.expand_dims(x, axis=0)
+        array = cnn.predict(x)
+        result = array[0]
+        print(result)
+        if result == 0:
+            print("pred: Leucemia")
+            return 1
+        else:
+            print("pred: Sanas")
+            return 2
     else:
-        print("pred: Sanas")
-        return False
+        return 3
 
 
 def info(adicional):
     if adicional == "Acerca de":
-        messagebox.showinfo("Acerda de", "Clasificador de lecemia por davito")
+        messagebox.showinfo("Acerda de", "Clasificador de Leucemia Mieloide Versión 1 \npor: davito, manuvlj")
     elif adicional == "Licencia":
         messagebox.showinfo("Licencia", "Producto bajo licencia GNU")
     elif adicional == "Manual":
-        messagebox.showinfo("Manual", "1. Cargue una imagen \n2. presione el boton clasificar \n3. pulse guardar para \
-        almacenar el resultado")
+        messagebox.showinfo("Manual", "1. Cargue una imagen \n2. presione el boton clasificar")
 
 
 def archivo(op):
     global mostrar
     global fichero
+    global hay
 
     if op == "abrir":
         fichero = filedialog.askopenfilename(title="Abrir", initialdir="./",
                                              filetypes=(("Todos los Archivos", "*.*"),
                                                         ("Archivos formato PNG", "*.png"),
                                                         ("Archivos formato JPG", "*.jpg")))
-        print(fichero)
-        mostrar = ImageTk.PhotoImage(Image.open(fichero).resize((240, 240)))
-        mostrar_image.config(image=mostrar)
+        try:
+            mostrar = ImageTk.PhotoImage(Image.open(fichero).resize((240, 240)))
+            mostrar_image.config(image=mostrar)
+            hay = True
+        except:
+            fichero = 'No.png'
+            mostrar = ImageTk.PhotoImage(Image.open(fichero).resize((240, 240)))
+            mostrar_image.config(image=mostrar)
+            hay = False
 
     elif op == "clasi":
-        clasi = clasificacion(fichero)
-        if clasi:
+        clasi = clasificacion(fichero, hay)
+        if clasi == 1:
             resultado.config(text="Tenes leucemia")
-        else:
+        elif clasi == 2:
             resultado.config(text="Estas sano")
+        else:
+            resultado.config(text="No hay imagen a clasificar")
     # elif op == "guardar como":
     #     filename = filedialog.asksaveasfilename(initialdir="/", title="Select file",
     #                                             filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*")))
@@ -143,7 +156,7 @@ mostrar = ImageTk.PhotoImage(Image.open("No.png").resize((240, 240)))
 mostrar_image = Tk.Label(frame, image=mostrar)
 mostrar_image.place(x=10, y=100)
 
-resultado = Tk.Label(frame, text='No se ha clasificado')
+resultado = Tk.Label(frame, text='No se ha clasificado', cursor="dot")
 resultado.config(padx=15, pady=10, justify="center")
 resultado.place(x=300, y=220)
 
