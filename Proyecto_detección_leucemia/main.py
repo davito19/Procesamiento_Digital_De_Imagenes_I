@@ -1,31 +1,53 @@
-import tkinter as Tk
-from tkinter import messagebox
-from tkinter import filedialog
-from PIL import ImageTk, Image
-import os
-import numpy as np
-from keras.preprocessing.image import load_img, img_to_array
-from keras.models import load_model
+# --------------------------------------------------------------------------
+# ------- Clasificador de Leucemia Mieloide --------------------------------
+# ------- Por: Manuela Restrepo  manuela.restrepoc@udea.edu.co -------------
+# -------      CC 1152704892, Tel 3194707181,  Wpp 3194707181  -------------
+# -------      David Vargas Bonett  odavid.vargas@udea.edu.co  -------------
+# -------      CC 1036685469, Tel 3122505311,  Wpp 3122505311  -------------
+# ------- Curso Básico de Procesamiento de Imágenes y Visión Artificial-----
+# ------- V1 Diciembre de 2020----------------------------------------------
+# --------------------------------------------------------------------------
 
-model = os.getcwd() + "/Modelo/leucemiamodel.h5"
-height = os.getcwd() + "/Modelo/leucemiamodel.h5"
-cnn = load_model(model)
-cnn.load_weights(height)
-fichero = 'No.png'
+# --------------------------------------------------------------------------
+# --1. Importando las librerias  -------------------------------------------
+# --------------------------------------------------------------------------
 
+import os  # Libreria paraa manejo de Sistema Operativo
+import numpy as np  # Libreria numerica
+import tkinter as Tk  # Libreria para diseño de interfaz graficas
+from tkinter import messagebox  # Modulo para el despliegue de ventanas emergentes
+from tkinter import filedialog  # Modulo para el despliegue de ventanas de archivos
+from PIL import ImageTk, Image  # Modulos utilizados para procesar imagenes
+from keras.preprocessing.image import load_img, img_to_array  # Modulos utilizados para procesar imagenes
+from keras.models import load_model  # Modulo para cargar modelos de Deep Learning
+
+# --------------------------------------------------------------------------
+# -- 2. Definición de Variables Globales del juego   -----------------------
+# --------------------------------------------------------------------------
+
+# Variables del Modelo
+model = os.getcwd() + "/Modelo/leucemiamodel.h5"  # Ruta donde se encuentran el modelo
+height = os.getcwd() + "/Modelo/leucemiamodel.h5"  # Ruta donde se encuentran los pesos del modelo
+cnn = load_model(model)  # Se carga el modelo en el objeto cnn
+cnn.load_weights(height)  # Se asignan los pesos a cada neurona que conforma la red
+
+# Variables para la interfaaz Grafica
 # Definimos la raiz
-raiz = Tk.Tk()
-raiz.title("Clasificador leucemia")
-raiz.iconbitmap("icon.ico")
-raiz.config(bg="blue")
+raiz = Tk.Tk()  # Se construye el objeto raiz de la clase Tk
+raiz.title("Clasificador leucemia")  # Se le asigna un nombre a la ventana
+raiz.iconbitmap("icon.ico")  # Agregamos un icono
+raiz.config(bg="blue")  # Definimos el background de la raiz
+# Definimos el frame
+frame = Tk.Frame(raiz, width=480, height=380)  # Se construye el frame que se va empaquetar en la ventana
+frame.pack(fill="both", expand="True")  # Empaquetamps el frame en la ventana
 
-# raiz.geometry("640x480")
-frame = Tk.Frame(raiz, width=480, height=380)
-frame.pack(fill="both", expand="True")
-arch = "580b57fcd9996e24bc43c325.png"
-arch1 = "descarga.png"
+# Variables Auxiliares
+fichero = 'No.png'  # Ruta de la imagen a mostrar una vez inicie el programa
 
 
+# --------------------------------------------------------------------------
+# -- 3. Definición de funciones del juego   --------------------------------
+# --------------------------------------------------------------------------
 
 def clasificacion(path):
     size = (640, 480)
@@ -42,6 +64,7 @@ def clasificacion(path):
     else:
         print("pred: Sanas")
         return False
+
 
 def info(adicional):
     if adicional == "Acerca de":
@@ -75,7 +98,6 @@ def archivo(op):
     # elif op == "guardar como":
     #     filename = filedialog.asksaveasfilename(initialdir="/", title="Select file",
     #                                             filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*")))
-
 
     elif op == "salir":
         valor = messagebox.askyesno("Salir", "¿Desea salir?")
@@ -117,7 +139,7 @@ clasificar = Tk.Button(frame, text="Clasificar", command=lambda: archivo("clasi"
 clasificar.config(padx=15, pady=10, justify="center")
 clasificar.place(x=160, y=10)
 
-mostrar = ImageTk.PhotoImage(Image.open("No.png").resize((240,240)))
+mostrar = ImageTk.PhotoImage(Image.open("No.png").resize((240, 240)))
 mostrar_image = Tk.Label(frame, image=mostrar)
 mostrar_image.place(x=10, y=100)
 
@@ -126,6 +148,3 @@ resultado.config(padx=15, pady=10, justify="center")
 resultado.place(x=300, y=220)
 
 raiz.mainloop()
-
-
-
